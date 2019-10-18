@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+from re import sub
+from decimal import Decimal
 
 URL = "https://www.amazon.com/dp/B00FSB799Q/ref=psdc_173565_t3_B00FSB79KU"
 
@@ -10,10 +12,11 @@ headers = {
 page = requests.get(URL, headers=headers)
 
 soup = BeautifulSoup(page.content, "html.parser")
-
 soup1 = BeautifulSoup(soup.prettify(), "html.parser")
 
-title = soup1.find(id="productTitle")
-
-print(title)
+title = soup1.find(id="productTitle").get_text()
+price = soup1.find(id="priceblock_ourprice").get_text()
+# Price comes back as string, use RegExp and Decimal to convert to float
+converted_price = Decimal(sub(r"[^\d.]", "", price))
+print(converted_price)
 
